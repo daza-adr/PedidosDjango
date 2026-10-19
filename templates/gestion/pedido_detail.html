@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle del pedido{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="detail-box">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Pedido #{{ pedido.numero_pedido }}</h2>
+                <div>
+                    <a href="{% url 'pedido_update' pedido.pk %}" class="btn btn-warning me-2">Editar</a>
+                    <a href="{% url 'pedido_list' %}" class="btn btn-outline-secondary">Volver</a>
+                </div>
+            </div>
+
+            <dl class="row">
+                <dt class="col-sm-4">Número de pedido</dt>
+                <dd class="col-sm-8">{{ pedido.numero_pedido }}</dd>
+
+                <dt class="col-sm-4">Cliente</dt>
+                <dd class="col-sm-8">{{ pedido.cliente }}</dd>
+
+                <dt class="col-sm-4">Descripción</dt>
+                <dd class="col-sm-8">{{ pedido.descripcion }}</dd>
+
+                <dt class="col-sm-4">Valor total</dt>
+                <dd class="col-sm-8">${{ pedido.valor_total }}</dd>
+
+                <dt class="col-sm-4">Estado</dt>
+                <dd class="col-sm-8">{{ pedido.get_estado_display }}</dd>
+
+                <dt class="col-sm-4">Usuario</dt>
+                <dd class="col-sm-8">{{ pedido.usuario.username }}</dd>
+
+                <dt class="col-sm-4">Fecha de registro</dt>
+                <dd class="col-sm-8">{{ pedido.fecha_registro|date:'d/m/Y H:i' }}</dd>
+            </dl>
+
+            <form method="post" action="{% url 'pedido_delete' pedido.pk %}" onsubmit="return confirm('¿Desea eliminar este pedido?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Eliminar pedido</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

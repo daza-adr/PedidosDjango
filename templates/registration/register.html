@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear cuenta{% endblock %}
+
+{% block content %}
+<div class="auth-shell">
+    <div class="auth-card card shadow-lg border-0">
+        <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="brand-badge mx-auto mb-3">PF</div>
+                <h2 class="fw-bold mb-1">Crear cuenta</h2>
+                <p class="text-muted mb-0">Registra tu usuario para continuar</p>
+            </div>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="auth-form-group">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted d-block mt-1">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ field.errors|join:', ' }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary w-100 btn-auth mt-2">Registrarse</button>
+            </form>
+
+            <div class="text-center mt-4 pt-2 border-top">
+                <a href="{% url 'login' %}" class="fw-semibold auth-link">Ya tengo cuenta</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle del producto{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="detail-box">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>{{ producto.nombre }}</h2>
+                <div>
+                    <a href="{% url 'producto_update' producto.pk %}" class="btn btn-warning me-2">Editar</a>
+                    <a href="{% url 'producto_list' %}" class="btn btn-outline-secondary">Volver</a>
+                </div>
+            </div>
+
+            <dl class="row">
+                <dt class="col-sm-4">Nombre</dt>
+                <dd class="col-sm-8">{{ producto.nombre }}</dd>
+
+                <dt class="col-sm-4">Descripción</dt>
+                <dd class="col-sm-8">{{ producto.descripcion }}</dd>
+
+                <dt class="col-sm-4">Precio</dt>
+                <dd class="col-sm-8">${{ producto.precio }}</dd>
+
+                <dt class="col-sm-4">Cantidad disponible</dt>
+                <dd class="col-sm-8">{{ producto.cantidad_disponible }}</dd>
+
+                <dt class="col-sm-4">Fecha de registro</dt>
+                <dd class="col-sm-8">{{ producto.fecha_registro|date:'d/m/Y H:i' }}</dd>
+            </dl>
+
+            <form method="post" action="{% url 'producto_delete' producto.pk %}" onsubmit="return confirm('¿Desea eliminar este producto?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Eliminar producto</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

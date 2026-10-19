@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Panel principal</h2>
+        <p class="text-muted mb-0">Resumen de la gestión de productos y pedidos.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <a href="{% url 'producto_list' %}" class="text-decoration-none text-reset">
+            <div class="card stat-card shadow-sm dashboard-card">
+                <div class="card-body">
+                    <div class="label">Productos</div>
+                    <div class="value">{{ total_productos }}</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'pedido_list' %}" class="text-decoration-none text-reset">
+            <div class="card stat-card shadow-sm dashboard-card">
+                <div class="card-body">
+                    <div class="label">Pedidos</div>
+                    <div class="value">{{ total_pedidos }}</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'pedido_list' %}?estado=pendiente" class="text-decoration-none text-reset">
+            <div class="card stat-card shadow-sm dashboard-card">
+                <div class="card-body">
+                    <div class="label">Pendientes</div>
+                    <div class="value">{{ pendientes }}</div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Productos</h5>
+                <p class="card-text text-muted">Consulta, agrega o modifica los productos disponibles.</p>
+                <a href="{% url 'producto_list' %}" class="btn btn-primary">Ver productos</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Pedidos</h5>
+                <p class="card-text text-muted">Administra nuevos pedidos y cambia su estado.</p>
+                <a href="{% url 'pedido_list' %}" class="btn btn-success">Ver pedidos</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

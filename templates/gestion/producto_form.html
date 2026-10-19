@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if producto %}Editar producto{% else %}Nuevo producto{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>{% if producto %}Editar producto{% else %}Nuevo producto{% endif %}</h2>
+                    <a href="{% url 'producto_list' %}" class="btn btn-outline-secondary">Volver</a>
+                </div>
+
+                <form method="post" id="producto-form" novalidate>
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="invalid-feedback d-block">{{ field.errors|join:', ' }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <a href="{% url 'producto_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('producto-form');
+        const fields = {
+            nombre: document.getElementById('id_nombre'),
+            descripcion: document.getElementById('id_descripcion'),
+            precio: document.getElementById('id_precio'),
+            cantidad_disponible: document.getElementById('id_cantidad_disponible')
+        };
+
+        function setError(field, message) {
+            if (!field) return;
+            field.classList.add('is-invalid');
+            let feedback = field.parentElement.querySelector('.invalid-feedback');
+            if (!feedback) {
+                feedback = document.createElement('div');
+                feedback.className = 'invalid-feedback d-block';
+                field.parentElement.appendChild(feedback);
+            }
+            feedback.textContent = message;
+        }
+
+        function clearError(field) {
+            if (!field) return;
+            field.classList.remove('is-invalid');
+            const feedback = field.parentElement.querySelector('.invalid-feedback');
+            if (feedback) feedback.textContent = '';
+        }
+
+        function validarFormulario() {
+            let isValid = true;
+            const nombre = fields.nombre.value.trim();
+            if (!nombre || nombre.length < 3) {
+                setError(fields.nombre, 'El nombre es obligatorio y debe tener al menos 3 caracteres.');
+                isValid = false;
+            } else {
+                clearError(fields.nombre);
+            }
+
+            const descripcion = fields.descripcion.value.trim();
+            if (descripcion.length > 500) {
+                setError(fields.descripcion, 'La descripción no puede superar 500 caracteres.');
+                isValid = false;
+            } else {
+                clearError(fields.descripcion);
+            }
+
+            const precio = Number(fields.precio.value);
+            if (!precio || precio <= 0) {
+                setError(fields.precio, 'El precio debe ser un número mayor que cero.');
+                isValid = false;
+            } else {
+                clearError(fields.precio);
+            }
+
+            const cantidad = Number(fields.cantidad_disponible.value);
+            if (!Number.isInteger(cantidad) || cantidad < 0) {
+                setError(fields.cantidad_disponible, 'La cantidad debe ser un número entero igual o superior a cero.');
+                isValid = false;
+            } else {
+                clearError(fields.cantidad_disponible);
+            }
+
+            return isValid;
+        }
+
+        Object.values(fields).forEach((field) => {
+            if (!field) return;
+            field.addEventListener('input', () => {
+                clearError(field);
+                if (!validarFormulario()) {
+                    return;
+                }
+            });
+        });
+
+        form.addEventListener('submit', function (event) {
+            if (!validarFormulario()) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}

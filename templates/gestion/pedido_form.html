@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if pedido %}Editar pedido{% else %}Nuevo pedido{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>{% if pedido %}Editar pedido{% else %}Nuevo pedido{% endif %}</h2>
+                    <a href="{% url 'pedido_list' %}" class="btn btn-outline-secondary">Volver</a>
+                </div>
+
+                <form method="post" id="pedido-form" novalidate>
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="invalid-feedback d-block">{{ field.errors|join:', ' }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <a href="{% url 'pedido_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('pedido-form');
+        const fields = {
+            numero_pedido: document.getElementById('id_numero_pedido'),
+            cliente: document.getElementById('id_cliente'),
+            descripcion: document.getElementById('id_descripcion'),
+            valor_total: document.getElementById('id_valor_total'),
+            estado: document.getElementById('id_estado')
+        };
+
+        function setError(field, message) {
+            if (!field) return;
+            field.classList.add('is-invalid');
+            let feedback = field.parentElement.querySelector('.invalid-feedback');
+            if (!feedback) {
+                feedback = document.createElement('div');
+                feedback.className = 'invalid-feedback d-block';
+                field.parentElement.appendChild(feedback);
+            }
+            feedback.textContent = message;
+        }
+
+        function clearError(field) {
+            if (!field) return;
+            field.classList.remove('is-invalid');
+            const feedback = field.parentElement.querySelector('.invalid-feedback');
+            if (feedback) feedback.textContent = '';
+        }
+
+        function validarFormulario() {
+            let isValid = true;
+
+            const numero = fields.numero_pedido.value.trim();
+            if (!numero) {
+                setError(fields.numero_pedido, 'El número del pedido es obligatorio.');
+                isValid = false;
+            } else {
+                clearError(fields.numero_pedido);
+            }
+
+            const cliente = fields.cliente.value.trim();
+            if (!cliente) {
+                setError(fields.cliente, 'El nombre del cliente es obligatorio.');
+                isValid = false;
+            } else {
+                clearError(fields.cliente);
+            }
+
+            const descripcion = fields.descripcion.value.trim();
+            if (!descripcion) {
+                setError(fields.descripcion, 'La descripción del pedido es obligatoria.');
+                isValid = false;
+            } else {
+                clearError(fields.descripcion);
+            }
+
+            const valorTotal = Number(fields.valor_total.value);
+            if (!valorTotal || valorTotal <= 0) {
+                setError(fields.valor_total, 'El valor total debe ser un número mayor que cero.');
+                isValid = false;
+            } else {
+                clearError(fields.valor_total);
+            }
+
+            const estadoValido = ['pendiente', 'confirmado', 'cancelado'];
+            if (!estadoValido.includes(fields.estado.value)) {
+                setError(fields.estado, 'El estado no es válido.');
+                isValid = false;
+            } else {
+                clearError(fields.estado);
+            }
+
+            return isValid;
+        }
+
+        Object.values(fields).forEach((field) => {
+            if (!field) return;
+            field.addEventListener('input', () => {
+                clearError(field);
+                if (!validarFormulario()) return;
+            });
+            field.addEventListener('change', () => {
+                clearError(field);
+                if (!validarFormulario()) return;
+            });
+        });
+
+        form.addEventListener('submit', function (event) {
+            if (!validarFormulario()) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}
