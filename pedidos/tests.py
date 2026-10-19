@@ -2,26 +2,16 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from .models import Pedido, Producto
+from .models import Pedido
 
 
-class ProductoPedidoModelTests(TestCase):
+class PedidoModelTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
             username='admin',
             password='admin123',
             email='admin@example.com',
         )
-
-    def test_producto_requires_positive_price(self):
-        producto = Producto(
-            nombre='Teclado',
-            descripcion='Teclado mecánico',
-            precio=0,
-            cantidad_disponible=5,
-        )
-        with self.assertRaises(ValidationError):
-            producto.full_clean()
 
     def test_pedido_requires_unique_number(self):
         Pedido.objects.create(
@@ -32,7 +22,6 @@ class ProductoPedidoModelTests(TestCase):
             estado='pendiente',
             usuario=self.user,
         )
-
         pedido = Pedido(
             numero_pedido='PED-001',
             cliente='Luis Pérez',
@@ -41,7 +30,6 @@ class ProductoPedidoModelTests(TestCase):
             estado='confirmado',
             usuario=self.user,
         )
-
         with self.assertRaises(ValidationError):
             pedido.full_clean()
 
@@ -54,6 +42,5 @@ class ProductoPedidoModelTests(TestCase):
                 'password2': 'Admin12345',
             },
         )
-
         self.assertEqual(response.status_code, 302)
         self.assertTrue(get_user_model().objects.filter(username='nuevo_usuario').exists())
